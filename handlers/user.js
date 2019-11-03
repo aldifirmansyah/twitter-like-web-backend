@@ -1,5 +1,19 @@
 const db = require("../models");
 const jwt = require("jsonwebtoken");
+const multer = require("multer");
+
+const upload = multer({
+  limits: {
+    fileSize: 1000000
+  },
+  fileFilter(req, file, cb) {
+    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+      return cb(new Error("please upload jpg, jpeg, or png file"));
+    }
+
+    cb(undefined, true);
+  }
+});
 
 exports.signin = async function(req, res, next) {
   try {
@@ -65,3 +79,7 @@ exports.signup = async function(req, res, next) {
     });
   }
 };
+
+// exports.setProfilePicture = async function(req, res, next) {
+
+// }
