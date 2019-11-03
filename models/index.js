@@ -1,9 +1,10 @@
 const mongoose = require("mongoose");
 mongoose.set("debug", true);
 mongoose.Promise = Promise;
-mongoose.connect("mongodb://localhost/warbler", {
+mongoose.connect("mongodb://localhost/twitterclone", {
+  useNewUrlParser: true,
   keepAlive: true,
-  useMongoClient: true
+  useFindAndModify: false
 });
 
 module.exports.User = require("./user");
