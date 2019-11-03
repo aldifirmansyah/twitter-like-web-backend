@@ -1,20 +1,27 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
+const db = require("../models");
 
-exports.loginRequired = function(req, res, next) {
+exports.decodeToken = function(req, res, next) {
   try {
     const token = req.headers.authorization.split(" ")[1];
     jwt.verify(token, process.env.SECRET_KEY, function(err, decoded) {
       if (decoded) {
+        const user = await db.user.findOne({ _id: decoded._id, "tokens.token": token });
+
+        if (!user) {
+          throw new Error();
+        }
+
+        req.token = token;
+        req.user = user;
+
         return next();
       } else {
-        return next({
-          status: 401,
-          message: "Please log in first"
-        });
+        throw new Error();
       }
     });
-  } catch (err) {
+  } catch {
     return next({
       status: 401,
       message: "Please log in first"
