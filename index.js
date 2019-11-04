@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 const errorHandler = require("./handlers/error");
 const userRoutes = require("./routes/user");
 const messagesRoutes = require("./routes/messages");
-const { decodeToken, ensureCorrectUser } = require("./middleware/auth");
+const { decodeToken } = require("./middleware/auth");
 const db = require("./models");
 const PORT = 8081;
 
@@ -14,7 +14,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.use("/api/user", userRoutes);
-app.use("/api/message", decodeToken, messagesRoutes);
+app.use("/api/message", messagesRoutes);
 
 app.get("/api/messages", decodeToken, async function(req, res, next) {
   try {

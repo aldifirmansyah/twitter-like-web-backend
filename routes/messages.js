@@ -1,4 +1,5 @@
 const express = require("express");
+const { decodeToken } = require("../middleware/auth");
 const router = express.Router({ mergeParams: true });
 
 const {
@@ -7,7 +8,7 @@ const {
   deleteMessage
 } = require("../handlers/messages");
 
-router.route("/").post(createMessage);
+router.route("/").post(decodeToken, createMessage);
 
 router
   .route("/:message_id")
