@@ -4,24 +4,24 @@ const app = express();
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const errorHandler = require("./handlers/error");
-const authRoutes = require("./routes/auth");
+const userRoutes = require("./routes/user");
 const messagesRoutes = require("./routes/messages");
-const { loginRequired, ensureCorrectUser } = require("./middleware/auth");
+const { decodeToken, ensureCorrectUser } = require("./middleware/auth");
 const db = require("./models");
 const PORT = 8081;
 
 app.use(cors());
 app.use(bodyParser.json());
 
-app.use("/api/auth", authRoutes);
+app.use("/api/user", userRoutes);
 app.use(
   "/api/user/:id/messages",
-  loginRequired,
+  decodeToken,
   ensureCorrectUser,
   messagesRoutes
 );
 
-app.get("/api/messages", loginRequired, async function(req, res, next) {
+app.get("/api/messages", decodeToken, async function(req, res, next) {
   try {
     let messages = await db.Message.find()
       .sort({ createdAt: "desc" })

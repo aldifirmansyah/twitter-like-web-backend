@@ -4,7 +4,8 @@ mongoose.Promise = Promise;
 mongoose.connect("mongodb://localhost/twitterclone", {
   useNewUrlParser: true,
   keepAlive: true,
-  useFindAndModify: false
+  useFindAndModify: false,
+  useCreateIndex: true
 });
 
 module.exports.User = require("./user");

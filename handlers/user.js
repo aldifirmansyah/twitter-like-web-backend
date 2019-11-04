@@ -1,40 +1,23 @@
 const db = require("../models");
 const jwt = require("jsonwebtoken");
-const multer = require("multer");
-
-const upload = multer({
-  limits: {
-    fileSize: 1000000
-  },
-  fileFilter(req, file, cb) {
-    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-      return cb(new Error("please upload jpg, jpeg, or png file"));
-    }
-
-    cb(undefined, true);
-  }
-});
 
 exports.signin = async function(req, res, next) {
   try {
     let user = await db.User.findOne({
       email: req.body.email
     });
-    let { id, username, profileImageUrl } = user;
+    let { _id, username } = user;
     let isMatch = await user.comparePassword(req.body.password);
     if (isMatch) {
       let token = jwt.sign(
         {
-          id,
-          username,
-          profileImageUrl
+          _id
         },
         process.env.SECRET_KEY
       );
       return res.status(200).json({
-        id,
+        _id,
         username,
-        profileImageUrl,
         token
       });
     } else {
@@ -54,19 +37,16 @@ exports.signin = async function(req, res, next) {
 exports.signup = async function(req, res, next) {
   try {
     let user = await db.User.create(req.body);
-    let { id, username, profileImageUrl } = user;
+    let { _id, username } = user;
     let token = jwt.sign(
       {
-        id,
-        username,
-        profileImageUrl
+        _id
       },
       process.env.SECRET_KEY
     );
-    return res.status(200).json({
-      id,
+    return res.status(201).json({
+      _id,
       username,
-      profileImageUrl,
       token
     });
   } catch (err) {
@@ -80,6 +60,28 @@ exports.signup = async function(req, res, next) {
   }
 };
 
-// exports.setProfilePicture = async function(req, res, next) {
+exports.setProfilePicture = async function(req, res, next) {
+  try {
+    req.user.profilePicture = req.file.buffer;
+    await req.user.save();
+    res.send();
+  } catch {
+    return next({
+      status: 400
+    });
+  }
+};
 
-// }
+exports.getProfilePicture = async (req, res, next) => {
+  try {
+    const user = await db.User.findById(req.params.id);
+    if (!user | !user.profilePicture) throw new Error();
+
+    res.set("Content-Type", "image/jpg");
+    res.send(user.profilePicture);
+  } catch {
+    return next({
+      status: 404
+    });
+  }
+};

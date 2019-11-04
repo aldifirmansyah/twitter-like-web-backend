@@ -2,13 +2,16 @@ require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const db = require("../models");
 
-exports.decodeToken = function(req, res, next) {
+exports.decodeToken = async function(req, res, next) {
   try {
     const token = req.headers.authorization.split(" ")[1];
-    jwt.verify(token, process.env.SECRET_KEY, function(err, decoded) {
+    jwt.verify(token, process.env.SECRET_KEY, async function(err, decoded) {
       if (decoded) {
-        const user = await db.user.findOne({ _id: decoded._id, "tokens.token": token });
-
+        console.log(decoded);
+        const user = await db.User.findOne({
+          _id: decoded._id
+        });
+        console.log(user);
         if (!user) {
           throw new Error();
         }
