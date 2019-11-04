@@ -13,6 +13,6 @@ router.route("/").post(decodeToken, createMessage);
 router
   .route("/:message_id")
   .get(getMessage)
-  .delete(deleteMessage);
+  .delete(decodeToken, deleteMessage);
 
 module.exports = router;
