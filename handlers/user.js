@@ -1,5 +1,6 @@
 const db = require("../models");
 const jwt = require("jsonwebtoken");
+const sharp = require("sharp");
 
 exports.signin = async function(req, res, next) {
   try {
@@ -62,7 +63,11 @@ exports.signup = async function(req, res, next) {
 
 exports.setProfilePicture = async function(req, res, next) {
   try {
-    req.user.profilePicture = req.file.buffer;
+    const buffer = await sharp(req.file.buffer)
+      .resize({ width: 250, height: 250 })
+      .jpeg()
+      .toBuffer();
+    req.user.profilePicture = buffer;
     await req.user.save();
     res.send();
   } catch {
@@ -77,7 +82,7 @@ exports.getProfilePicture = async (req, res, next) => {
     const user = await db.User.findById(req.params.id);
     if (!user | !user.profilePicture) throw new Error();
 
-    res.set("Content-Type", "image/jpg");
+    res.set("Content-Type", "image/jpeg");
     res.send(user.profilePicture);
   } catch {
     return next({
