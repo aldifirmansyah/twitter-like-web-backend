@@ -14,12 +14,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.use("/api/user", userRoutes);
-app.use(
-  "/api/user/:id/messages",
-  decodeToken,
-  ensureCorrectUser,
-  messagesRoutes
-);
+app.use("/api/message", decodeToken, messagesRoutes);
 
 app.get("/api/messages", decodeToken, async function(req, res, next) {
   try {
