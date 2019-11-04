@@ -16,20 +16,6 @@ app.use(bodyParser.json());
 app.use("/api/user", userRoutes);
 app.use("/api/message", messagesRoutes);
 
-app.get("/api/messages", decodeToken, async function(req, res, next) {
-  try {
-    let messages = await db.Message.find()
-      .sort({ createdAt: "desc" })
-      .populate("user", {
-        username: true,
-        profileImageUrl: true
-      });
-    return res.status(200).json(messages);
-  } catch (err) {
-    return next(err);
-  }
-});
-
 app.use((req, res, next) => {
   let err = new Error("Not Found");
   err.status = 404;

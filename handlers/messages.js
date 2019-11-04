@@ -40,3 +40,17 @@ exports.deleteMessage = async function(req, res, next) {
     return next({ status: 404 });
   }
 };
+
+exports.getAllMessages = async (req, res, next) => {
+  try {
+    const page = req.query.page ? req.query.page : 1;
+    console.log(page);
+    const messages = await db.Message.find({})
+      .sort({ updatedAt: "desc" })
+      .limit(10)
+      .skip(10 * page);
+    res.send(messages);
+  } catch {
+    return next({ status: 500 });
+  }
+};
