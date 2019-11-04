@@ -7,11 +7,9 @@ exports.decodeToken = async function(req, res, next) {
     const token = req.headers.authorization.split(" ")[1];
     jwt.verify(token, process.env.SECRET_KEY, async function(err, decoded) {
       if (decoded) {
-        console.log(decoded);
         const user = await db.User.findOne({
           _id: decoded._id
         });
-        console.log(user);
         if (!user) {
           throw new Error();
         }
